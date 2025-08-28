@@ -1,0 +1,24 @@
+{
+  "name": "smartbrowser",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "veerrajpoot.com",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon app.js",
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "@openai/agents": "^0.0.17",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "openai": "^5.16.0",
+    "puppeteer": "^24.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "nodemon": "^3.1.10"
+  }
+}
