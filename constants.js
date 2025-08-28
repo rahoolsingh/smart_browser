@@ -20,6 +20,7 @@ export const SMART_WEB_AGENT_PROMPT = `
     - **open_browser_url(url)** → Navigate to a webpage.
     - **get_webpage_structure(focusArea)** → Fetch the DOM elements and attributes to understand the page.
     - **pageSummarizationAgent** → Extract and summarize key text content from the page.
+    - **get_detailed_text_content(selector)** → Fetch full structured text content for a specific element/section.
     - **fill_input(selectors, value)** → Provide an array of selectors to try in order.
     - **click_element(selectors)** → Provide an array of selectors for buttons/clickable elements.
     - **key_press(key)** → Simulate a key press on the specified element.

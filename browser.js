@@ -148,26 +148,63 @@ const elementByMatchingSelector = tool({
 
 const getStructuredTextContentInBrief = tool({
     name: "get_structured_text_content_in_brief",
-    description: "Get structured text content from the webpage",
+    description: "Get a summarized structured text content from the webpage",
     parameters: z.object({
-        focusArea: z.string().describe("The area of the page to focus on div, a section, or any other container"),
+        focusArea: z
+            .string()
+            .describe("CSS selector of the area to extract brief text from"),
+        maxLength: z.number().optional().default(300), // default: 300 chars
     }),
-    async execute({ focusArea }) {
-        const content = await page.evaluate((focusArea) => {
-            const element = document.querySelector(focusArea);
-            if (!element) return null;
+    async execute({ focusArea, maxLength }) {
+        const content = await page.evaluate(
+            ({ focusArea, maxLength }) => {
+                const element = document.querySelector(focusArea);
+                if (!element) return null;
 
-            const textContent = element.innerText.trim();
-            return { textContent };
-        }, focusArea);
+                const fullText = element.innerText.trim();
+                const briefText =
+                    fullText.length > maxLength
+                        ? fullText.slice(0, maxLength) + "..."
+                        : fullText;
+
+                return {
+                    briefText,
+                    fullTextLength: fullText.length,
+                    selector: focusArea,
+                };
+            },
+            { focusArea, maxLength }
+        );
 
         if (!content) {
             throw new Error(`No content found in focus area: ${focusArea}`);
         }
 
-        return { content };
+        return content;
     },
 });
+
+const getDetailedTextContent = tool({
+    name: "get_detailed_text_content",
+    description: "Fetch full structured text content for a specific element/section",
+    parameters: z.object({
+        selector: z.string().describe("CSS selector of the element to extract full text from"),
+    }),
+    async execute({ selector }) {
+        const content = await page.evaluate((selector) => {
+            const element = document.querySelector(selector);
+            if (!element) return null;
+            return { fullText: element.innerText.trim() };
+        }, selector);
+
+        if (!content) {
+            throw new Error(`No content found for selector: ${selector}`);
+        }
+
+        return content;
+    },
+});
+
 
 const fillInput = tool({
     name: "fill_input",
@@ -287,6 +324,7 @@ export {
     getWebpageStructure,
     elementByMatchingSelector,
     getStructuredTextContentInBrief,
+    getDetailedTextContent,
     fillInput,
     clickElement,
     keyPress,

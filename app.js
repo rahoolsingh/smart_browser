@@ -9,6 +9,7 @@ import browser, {
     takeScreenShot,
     openBrowserUrl,
     getWebpageStructure,
+    getDetailedTextContent,
     elementByMatchingSelector,
     fillInput,
     clickElement,
@@ -33,6 +34,7 @@ const websiteAutomationAgent = new Agent({
                 focusArea: z.string(),
             }),
         }),
+        getDetailedTextContent,
         fillInput,
         clickElement,
         keyPress,
@@ -55,5 +57,5 @@ async function chatWithAgent(query) {
 }
 
 chatWithAgent(`
-go to bing and search for mobile and tell me the first site and links
+go to bing and search for mobile and tell me the first 2 sites and links
 `);
