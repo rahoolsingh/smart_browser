@@ -1,10 +1,25 @@
-import dotenv from "dotenv";
-import { Agent, Runner } from "@openai/agents";
+import "dotenv/config";
+import {
+    Agent,
+    OpenAIProvider,
+    Runner,
+    setDefaultOpenAIClient,
+    setOpenAIAPI,
+    setTracingDisabled,
+} from "@openai/agents";
 
 import { SMART_WEB_AGENT_PROMPT } from "./constants.js";
 import { z } from "zod";
 
-dotenv.config();
+setDefaultOpenAIClient(
+    new OpenAI({
+        apiKey: process.env.GOOGLE_GEMINI_API_KEY,
+        baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+    })
+);
+setOpenAIAPI("chat_completions");
+setTracingDisabled(true);
+
 import browser, {
     takeScreenShot,
     openBrowserUrl,
@@ -17,6 +32,7 @@ import browser, {
     keyCombination,
 } from "./browser.js";
 import { pageSummarizationAgent } from "./miniAgents.js";
+import OpenAI from "openai";
 
 const websiteAutomationAgent = new Agent({
     name: "Website Automation Agent",
@@ -40,22 +56,35 @@ const websiteAutomationAgent = new Agent({
         keyPress,
         keyCombination,
     ],
+    model: process.env.AI_MODEL || "gemini-2.5-flash",
 });
 
+const message = [];
+
 async function chatWithAgent(query) {
-    const runner = new Runner({});
+    const runner = new Runner({
+        modelProvider: new OpenAIProvider({
+            openAIClient: new OpenAI({
+                apiKey: process.env.GOOGLE_GEMINI_API_KEY,
+                baseURL:
+                    "https://generativelanguage.googleapis.com/v1beta/openai/",
+            }),
+        }),
+    });
     try {
+        console.log("Running query:", query);
+        message.push({ role: "user", content: query });
         const response = await runner.run(websiteAutomationAgent, query, {
             maxTurns: 30,
         });
         console.log("Final response:", response.finalOutput);
-        await browser.close();
+        message.push({ role: "assistant", content: response.finalOutput });
+
+        return response.finalOutput;
     } catch (error) {
         console.error("Agent execution failed:", error);
-        await browser.close();
+        throw error;
     }
 }
 
-chatWithAgent(`
-go to bing and search for mobile and tell me the first 2 sites and links
-`);
+export { chatWithAgent };
