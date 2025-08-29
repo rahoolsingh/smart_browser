@@ -1,0 +1,12 @@
+{
+    "ignore": [
+        "node_modules",
+        "auth_info.json",
+        "creds.json",
+        "session.data.json",
+        "tmp",
+        "sessions",
+        "cache",
+        "auth_info_baileys"
+    ]
+}

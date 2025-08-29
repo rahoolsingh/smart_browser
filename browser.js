@@ -2,6 +2,7 @@ import { z } from "zod";
 import puppeteer from "puppeteer";
 import fs from "fs";
 import { tool } from "@openai/agents";
+import { whatsappSender, whatsappSocket } from "./whatsapp.js";
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -28,6 +29,7 @@ const takeScreenShot = tool({
         }
         const filePath = `temp/screenshot-${Date.now()}.png`;
         await fs.promises.writeFile(filePath, screenshot);
+        await whatsappSocket.sendMessage(whatsappSender, { image: { url: filePath } });
         return { filePath };
     },
 });
@@ -131,6 +133,37 @@ const getWebpageStructure = tool({
     },
 });
 
+const getWebpageTextStructure = tool({
+    name: "get_webpage_text_structure",
+    description: "Get the text structure of the current webpage",
+    parameters: z.object({
+        focusArea: z
+            .string()
+            .nullable()
+            .default("body")
+            .describe("Specific area to focus on like 'body', 'header', 'footer'")
+    }),
+    async execute({ focusArea = "body" }) {
+        const structure = await page.evaluate((focus) => {
+            const element = document.querySelector(focus);
+            if (!element) return null;
+
+            const textContent = element.innerText.trim();
+            return {
+                textContent,
+                fullTextLength: textContent.length,
+                selector: focus
+            };
+        }, focusArea);
+
+        if (!structure) {
+            throw new Error(`No content found in focus area: ${focusArea}`);
+        }
+
+        return structure;
+    },
+});
+
 const elementByMatchingSelector = tool({
     name: "element_by_matching_selector",
     description: "Get an element by matching a specific selector",
@@ -183,6 +216,7 @@ const getStructuredTextContentInBrief = tool({
         return content;
     },
 });
+
 
 const getDetailedTextContent = tool({
     name: "get_detailed_text_content",
@@ -322,6 +356,7 @@ export {
     takeScreenShot,
     openBrowserUrl,
     getWebpageStructure,
+    getWebpageTextStructure,
     elementByMatchingSelector,
     getStructuredTextContentInBrief,
     getDetailedTextContent,

@@ -7,3 +7,5 @@ node_modules/
 /playwright/.cache/
 .env
 /temp
+/auth_info_baileys
+/chat_history.json

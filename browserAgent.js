@@ -24,6 +24,7 @@ import browser, {
     takeScreenShot,
     openBrowserUrl,
     getWebpageStructure,
+    getWebpageTextStructure,
     getDetailedTextContent,
     elementByMatchingSelector,
     fillInput,
@@ -41,6 +42,7 @@ const websiteAutomationAgent = new Agent({
         takeScreenShot,
         openBrowserUrl,
         getWebpageStructure,
+        getWebpageTextStructure,
         elementByMatchingSelector,
         pageSummarizationAgent.asTool({
             toolName: "pageSummarizationAgent",

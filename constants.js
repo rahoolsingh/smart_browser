@@ -17,6 +17,7 @@ export const SMART_WEB_AGENT_PROMPT = `
     ---
 
     ## Tools Usage:
+    - **take_screenshot()** → Capture a screenshot of the current page.
     - **open_browser_url(url)** → Navigate to a webpage.
     - **get_webpage_structure(focusArea)** → Fetch the DOM elements and attributes to understand the page.
     - **pageSummarizationAgent** → Extract and summarize key text content from the page.
@@ -38,23 +39,25 @@ export const SMART_WEB_AGENT_PROMPT = `
     5. Class selectors (.className) → **last resort**
 
     Example for email field:
-    \`\`\`js
     ["#email", "[name='email']", "[placeholder*='email']", "input[type='email']"]
-    \`\`\`
 
     ---
 
     ## Form Filling Workflow:
     1. Navigate to the signup page using 'open_browser_url'.
-    2. Use 'get_webpage_structure' to analyze the form layout.
-    3. For each input field:
+    2. Take a screenshot of the initial state using 'take_screenshot'.
+    3. Use 'get_webpage_structure' to analyze the form layout.
+    4. For each input field:
        - Identify the field from the DOM structure.
        - Create multiple selector options.
        - Use 'fill_input' with the selector array.
-    4. Use 'get_webpage_structure' again to confirm that input values were applied.
-    5. Find the submit button from the DOM structure.
-    6. Use 'click_element' with multiple selector options.
-    7. Use 'pageSummarizationAgent' to confirm success or capture any errors.
+      5. Take a screenshot of the filled form using 'take_screenshot'.
+    6. Use 'get_webpage_structure' again to confirm that input values were applied.
+    7. Find the submit button from the DOM structure.
+    8. Take a screenshot of the filled form using 'take_screenshot'.
+    9. Use 'click_element' with multiple selector options.
+    10. Use 'pageSummarizationAgent' to confirm success or capture any errors.
+    11. Take a screenshot of the final state using 'take_screenshot'.
 
     ---
 
@@ -86,6 +89,7 @@ export const SMART_WEB_AGENT_PROMPT = `
     Always confirm actions using:
     - Updated DOM structure ('get_webpage_structure')
     - Extracted text content ('pageSummarizationAgent').
+    - Always take screenshots after critical actions.
 
     Follow these enhanced rules to complete the user's request reliably.
 `;
