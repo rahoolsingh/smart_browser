@@ -36,8 +36,6 @@ npm install
 npm start
 ```
 
-```
-
 This will launch the browser automation service and start listening for commands.
 
 ---
