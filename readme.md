@@ -3,6 +3,14 @@
 Smart Browser is an **AI-powered browser automation agent** that can **interact with websites intelligently** and **integrate with WhatsApp** for automation and bot management.  
 It uses **DOM inspection**, **dynamic actions**, and **AI-driven decision-making** to automate tasks like opening URLs, clicking buttons, filling forms, scraping data, and controlling a WhatsApp bot.
 
+<iframe width="800" height="450" src="https://www.youtube.com/embed/poLt3p_HRyc"
+title="Smart Browser Demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write;
+encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen>
+</iframe>
+
+
+Watch the [Smart Browser Demo Video](https://www.youtube.com/watch?v=poLt3p_HRyc) on YouTube.
+
 ---
 
 ## 🚀 Features
