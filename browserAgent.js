@@ -12,25 +12,27 @@ import { SMART_WEB_AGENT_PROMPT } from "./constants.js";
 import { z } from "zod";
 
 setDefaultOpenAIClient(
-    new OpenAI({
-        apiKey: process.env.GOOGLE_GEMINI_API_KEY,
-        baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
-    })
+    // new OpenAI({
+    //     apiKey: process.env.GOOGLE_GEMINI_API_KEY,
+    //     baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+    // })
 );
-setOpenAIAPI("chat_completions");
-setTracingDisabled(true);
+// setOpenAIAPI("chat_completions");
+// setTracingDisabled(true);
 
 import browser, {
     takeScreenShot,
     openBrowserUrl,
     getWebpageStructure,
-    getWebpageTextStructure,
-    getDetailedTextContent,
-    elementByMatchingSelector,
+    getNavigationStructure,
+    // getWebpageTextStructure,
+    // getDetailedTextContent,
+    // elementByMatchingSelector,
     fillInput,
     clickElement,
     keyPress,
-    keyCombination,
+    // keyCombination,
+    fillSecretInInput,
 } from "./browser.js";
 import { pageSummarizationAgent } from "./miniAgents.js";
 import OpenAI from "openai";
@@ -42,8 +44,10 @@ const websiteAutomationAgent = new Agent({
         takeScreenShot,
         openBrowserUrl,
         getWebpageStructure,
-        getWebpageTextStructure,
-        elementByMatchingSelector,
+        // getWebpageTextStructure,
+        // getDetailedTextContent,
+        getNavigationStructure,
+        // elementByMatchingSelector,
         pageSummarizationAgent.asTool({
             toolName: "pageSummarizationAgent",
             description:
@@ -52,33 +56,70 @@ const websiteAutomationAgent = new Agent({
                 focusArea: z.string(),
             }),
         }),
-        getDetailedTextContent,
         fillInput,
         clickElement,
         keyPress,
-        keyCombination,
+        // keyCombination,
+        fillSecretInInput,
     ],
     model: process.env.AI_MODEL || "gemini-2.5-flash",
 });
 
 const message = [];
 
+// async function chatWithAgent(query) {
+//     const runner = new Runner({
+//         modelProvider: new OpenAIProvider({
+//             openAIClient: new OpenAI({
+//                 apiKey: process.env.GOOGLE_GEMINI_API_KEY,
+//                 baseURL:
+//                     "https://generativelanguage.googleapis.com/v1beta/openai/",
+//             }),
+//         }),
+//     });
+//     try {
+//         console.log("Running query:", query);
+//         message.push({ role: "user", content: query });
+//         const response = await runner.run(websiteAutomationAgent, query, {
+//             maxTurns: 30,
+//         });
+//         console.log("Final response:", response.finalOutput);
+//         message.push({ role: "assistant", content: response.finalOutput });
+
+//         return response.finalOutput;
+//     } catch (error) {
+//         console.error("Agent execution failed:", error);
+//         throw error;
+//     }
+// }
+
 async function chatWithAgent(query) {
     const runner = new Runner({
-        modelProvider: new OpenAIProvider({
-            openAIClient: new OpenAI({
-                apiKey: process.env.GOOGLE_GEMINI_API_KEY,
-                baseURL:
-                    "https://generativelanguage.googleapis.com/v1beta/openai/",
-            }),
-        }),
+        // modelProvider: new OpenAIProvider({
+        //     openAIClient: new OpenAI({
+        //         apiKey: process.env.GOOGLE_GEMINI_API_KEY,
+        //         baseURL:
+        //             "https://generativelanguage.googleapis.com/v1beta/openai/",
+        //     }),
+        // }),
     });
+
     try {
         console.log("Running query:", query);
         message.push({ role: "user", content: query });
+
         const response = await runner.run(websiteAutomationAgent, query, {
-            maxTurns: 30,
+            maxTurns: 40,
+            stream: false,
+            onStepStart: async (step) => {
+                console.log(`⚡ Starting step: ${step.name}`);
+            },
+            onStepFinish: async (step) => {
+                console.log(`✅ Finished step: ${step.name}`);
+                console.log(`   → Output: ${JSON.stringify(step.output)}`);
+            },
         });
+
         console.log("Final response:", response.finalOutput);
         message.push({ role: "assistant", content: response.finalOutput });
 

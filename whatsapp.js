@@ -40,7 +40,6 @@ sock.ev.on("connection.update", (update) => {
             DisconnectReason.loggedOut
     ) {
         console.log("🔄 Mohini is reconnecting...");
-        setTimeout(startBot, 3000);
     }
 });
 
@@ -59,25 +58,24 @@ sock.ev.on("messages.upsert", async ({ messages }) => {
             msg.message.extendedTextMessage?.text ||
             msg.message.imageMessage?.caption ||
             "";
+        if (!text.trim()) return;
+
         console.log("Received message:", text);
 
-        if (!text.trim()) {
-            console.log("Ignoring empty message");
-            return;
-        }
-
-        whatsappSender = sender;
-        whatsappSocket = sock;
-
-        const response = await chatWithAgent(text.trim());
-        // Show typing indicator
+        // Step 1 — Acknowledge request
         await sock.sendPresenceUpdate("composing", sender);
-        await sock.sendMessage(sender, {
-            text: response,
-        });
+        await sock.sendMessage(sender, { text: "⚡ Mohini is working on it..." });
+
+        // Step 2 — Wait until automation is FULLY done
+        const response = await chatWithAgent(text.trim());
+
+        // Step 3 — Send final result
+        await sock.sendPresenceUpdate("composing", sender);
+        await sock.sendMessage(sender, { text: response });
     } catch (err) {
         console.error("Message handling error:", err);
     }
 });
+
 
 export { whatsappSender, whatsappSocket };

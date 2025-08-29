@@ -9,3 +9,4 @@ node_modules/
 /temp
 /auth_info_baileys
 /chat_history.json
+secrets.js
